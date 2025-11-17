@@ -1,0 +1,106 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="isEditing ? updateProfile() : isEditing = true" [disabled]="isLoading">
+        <ion-icon slot="icon-only" [name]="isEditing ? 'checkmark' : 'create'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner></ion-spinner>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="profile-container">
+    <!-- Avatar y nombre -->
+    <div class="profile-header">
+      <div class="avatar-container">
+        <ion-avatar class="profile-avatar">
+          <img [src]="'https://ui-avatars.com/api/?name=' + (profile?.full_name || 'Usuario') + '&background=random'" />
+        </ion-avatar>
+        <ion-badge *ngIf="user?.user_metadata?.role === 'admin'" color="primary" class="role-badge">
+          Administrador
+        </ion-badge>
+        <ion-badge *ngIf="user?.user_metadata?.role === 'reader'" color="secondary" class="role-badge">
+          Lector
+        </ion-badge>
+      </div>
+      
+      <h1 *ngIf="!isEditing">{{ profile?.full_name || 'Usuario' }}</h1>
+      <ion-item *ngIf="isEditing" class="editable-field">
+        <ion-label position="floating">Nombre Completo</ion-label>
+        <ion-input [(ngModel)]="profile.full_name" [ngModelOptions]="{standalone: true}"></ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Información del perfil -->
+    <ion-list lines="none" class="profile-info">
+      <!-- Email -->
+      <ion-item>
+        <ion-icon slot="start" name="mail" color="medium"></ion-icon>
+        <ion-label>
+          <h3>Correo Electrónico</h3>
+          <p *ngIf="!isEditing">{{ profile?.email || 'No especificado' }}</p>
+          <ion-input 
+            *ngIf="isEditing" 
+            type="email" 
+            [(ngModel)]="profile.email" 
+            [ngModelOptions]="{standalone: true}"
+            class="editable-input"
+          ></ion-input>
+        </ion-label>
+      </ion-item>
+
+      <!-- Teléfono -->
+      <ion-item>
+        <ion-icon slot="start" name="call" color="medium"></ion-icon>
+        <ion-label>
+          <h3>Teléfono</h3>
+          <p *ngIf="!isEditing">{{ profile?.phone || 'No especificado' }}</p>
+          <ion-input 
+            *ngIf="isEditing" 
+            type="tel" 
+            [(ngModel)]="profile.phone" 
+            [ngModelOptions]="{standalone: true}"
+            class="editable-input"
+          ></ion-input>
+        </ion-label>
+      </ion-item>
+
+      <!-- Fecha de registro -->
+      <ion-item *ngIf="user?.created_at">
+        <ion-icon slot="start" name="calendar" color="medium"></ion-icon>
+        <ion-label>
+          <h3>Miembro desde</h3>
+          <p>{{ user.created_at | date:'mediumDate' }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <!-- Acciones -->
+    <div class="profile-actions">
+      <ion-button expand="block" fill="outline" (click)="changePassword()">
+        <ion-icon slot="start" name="key"></ion-icon>
+        Cambiar Contraseña
+      </ion-button>
+      
+      <ion-button expand="block" fill="outline" color="danger" (click)="logout()">
+        <ion-icon slot="start" name="log-out"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </div>
+
+    <!-- Información de la aplicación -->
+    <div class="app-info">
+      <p class="version">Versión 1.0.0</p>
+      <p class="copyright">© 2023 Sistema de Lectura de Medidores</p>
+    </div>
+  </div>
+</ion-content>

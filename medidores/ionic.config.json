@@ -1,0 +1,7 @@
+{
+  "name": "medidores",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

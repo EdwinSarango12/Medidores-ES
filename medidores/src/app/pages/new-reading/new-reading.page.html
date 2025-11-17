@@ -1,0 +1,167 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/readings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nueva Lectura</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onSubmit()" [disabled]="isSubmitting">
+        <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="readingForm" (ngSubmit)="onSubmit()">
+    <!-- Información del medidor -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Información del Medidor</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Número de Medidor *</ion-label>
+          <ion-input formControlName="meter_number" type="text" required></ion-input>
+        </ion-item>
+        
+        <ion-note *ngIf="meterNumber?.errors?.['required'] && (meterNumber?.dirty || meterNumber?.touched)" color="danger">
+          El número de medidor es requerido
+        </ion-note>
+        <ion-note *ngIf="meterNumber?.errors?.['pattern']" color="danger">
+          Solo se permiten números
+        </ion-note>
+        
+        <ion-item>
+          <ion-label position="floating">Lectura Actual *</ion-label>
+          <ion-input formControlName="reading_value" type="number" required></ion-input>
+        </ion-item>
+        
+        <ion-note *ngIf="readingValue?.errors?.['required'] && (readingValue?.dirty || readingValue?.touched)" color="danger">
+          La lectura es requerida
+        </ion-note>
+        <ion-note *ngIf="readingValue?.errors?.['min']" color="danger">
+          La lectura no puede ser negativa
+        </ion-note>
+        
+        <ion-item>
+          <ion-label position="floating">Fecha de Lectura</ion-label>
+          <ion-datetime formControlName="reading_date" display-format="DD/MM/YYYY" picker-format="DD/MM/YYYY"></ion-datetime>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Foto del medidor -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Foto del Medidor *</ion-card-title>
+        <ion-card-subtitle>Captura el estado actual del medidor</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content class="photo-container">
+        <div *ngIf="!meterPhoto" class="photo-placeholder" (click)="takePhoto('meter')">
+          <ion-icon name="camera"></ion-icon>
+          <p>Toma una foto del medidor</p>
+        </div>
+        
+        <div *ngIf="meterPhoto" class="photo-preview">
+          <img [src]="meterPhoto" alt="Foto del medidor">
+          <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button size="small" color="danger" (click)="removePhoto('meter')">
+              <ion-icon name="trash"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Foto de la fachada -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Foto de la Fachada</ion-card-title>
+        <ion-card-subtitle>Opcional - Captura la fachada de la propiedad</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content class="photo-container">
+        <div *ngIf="!housePhoto" class="photo-placeholder" (click)="takePhoto('house')">
+          <ion-icon name="home"></ion-icon>
+          <p>Toma una foto de la fachada</p>
+        </div>
+        
+        <div *ngIf="housePhoto" class="photo-preview">
+          <img [src]="housePhoto" alt="Foto de la fachada">
+          <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button size="small" color="danger" (click)="removePhoto('house')">
+              <ion-icon name="trash"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Ubicación -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Ubicación</ion-card-title>
+        <ion-card-subtitle>Coordenadas de la lectura</ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <div *ngIf="currentLocation" class="location-info">
+          <ion-icon name="locate" color="primary"></ion-icon>
+          <div>
+            <p>Ubicación obtenida correctamente</p>
+            <p class="coordinates">
+              {{ currentLocation.latitude | number:'1.5-5' }}, 
+              {{ currentLocation.longitude | number:'1.5-5' }}
+              <span *ngIf="currentLocation.accuracy">
+                <br>Precisión: ~{{ currentLocation.accuracy | number:'1.0-0' }}m
+              </span>
+            </p>
+          </div>
+        </div>
+        
+        <div *ngIf="locationError" class="location-error">
+          <ion-icon name="warning" color="warning"></ion-icon>
+          <p>{{ locationError }}</p>
+        </div>
+        
+        <ion-button expand="block" fill="outline" (click)="getCurrentLocation()">
+          <ion-icon slot="start" name="refresh"></ion-icon>
+          Actualizar Ubicación
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Notas adicionales -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Notas Adicionales</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-textarea 
+          formControlName="notes" 
+          placeholder="Agrega cualquier observación relevante sobre la lectura..."
+          rows="4"
+        ></ion-textarea>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button 
+      expand="block" 
+      size="large" 
+      (click)="onSubmit()" 
+      [disabled]="readingForm.invalid || !meterPhoto || !currentLocation || isSubmitting"
+      class="submit-button"
+    >
+      <ion-icon slot="start" name="save"></ion-icon>
+      {{ isSubmitting ? 'Guardando...' : 'Guardar Lectura' }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

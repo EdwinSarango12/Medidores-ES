@@ -1,0 +1,202 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="add-circle-outline" class="header-icon"></ion-icon>
+      Registrar Medidor
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Nuevo Medidor</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="form-container">
+    <ion-card class="form-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="water-outline"></ion-icon>
+          Datos del Medidor
+        </ion-card-title>
+        <ion-card-subtitle>Complete la información de la lectura</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form>
+          <!-- Número de Medidor -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="barcode-outline"></ion-icon>
+              Número de Medidor *
+            </ion-label>
+            <ion-input
+              type="text"
+              [(ngModel)]="medidor.numero_medidor"
+              name="numero_medidor"
+              placeholder="Ej: 12345678"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <!-- Lectura Anterior -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="arrow-down-circle-outline"></ion-icon>
+              Lectura Anterior (m³) *
+            </ion-label>
+            <ion-input
+              type="number"
+              [(ngModel)]="medidor.lectura_anterior"
+              name="lectura_anterior"
+              placeholder="0"
+              (ionChange)="calcularConsumo()"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <!-- Lectura Actual -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="arrow-up-circle-outline"></ion-icon>
+              Lectura Actual (m³) *
+            </ion-label>
+            <ion-input
+              type="number"
+              [(ngModel)]="medidor.lectura_actual"
+              name="lectura_actual"
+              placeholder="0"
+              (ionChange)="calcularConsumo()"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <!-- Consumo Calculado -->
+          <ion-item class="form-item consumo-item" *ngIf="medidor.consumo > 0">
+            <ion-label>
+              <ion-icon name="analytics-outline"></ion-icon>
+              Consumo Calculado
+            </ion-label>
+            <ion-badge [color]="getConsumoColor(medidor.consumo)" slot="end">
+              {{ medidor.consumo }} m³
+            </ion-badge>
+          </ion-item>
+
+          <!-- Fecha de Lectura -->
+          <ion-item class="form-item">
+            <ion-label position="stacked">
+              <ion-icon name="calendar-outline"></ion-icon>
+              Fecha de Lectura *
+            </ion-label>
+            <ion-input
+              type="date"
+              [(ngModel)]="medidor.fecha_lectura"
+              name="fecha_lectura"
+              required
+            ></ion-input>
+          </ion-item>
+
+          <!-- Sección de Ubicación -->
+          <div class="ubicacion-section">
+            <h3>
+              <ion-icon name="location-outline"></ion-icon>
+              Ubicación
+            </h3>
+
+            <!-- Botón para obtener ubicación automática -->
+            <ion-button
+              expand="block"
+              fill="outline"
+              (click)="obtenerUbicacionAutomatica()"
+              [disabled]="obteniendoUbicacion"
+            >
+              <ion-icon slot="start" name="navigate-outline"></ion-icon>
+              {{ obteniendoUbicacion ? 'Obteniendo ubicación...' : 'Obtener Ubicación Automática' }}
+            </ion-button>
+
+            <!-- Ubicación obtenida -->
+            <div *ngIf="ubicacionObtenida" class="ubicacion-obtenida">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Ubicación obtenida exitosamente</span>
+            </div>
+
+            <!-- O ingresar manualmente -->
+            <div class="divider">
+              <span>O ingresar manualmente</span>
+            </div>
+
+            <!-- Dirección Manual -->
+            <ion-item class="form-item">
+              <ion-label position="stacked">
+                <ion-icon name="home-outline"></ion-icon>
+                Dirección
+              </ion-label>
+              <ion-textarea
+                [(ngModel)]="medidor.direccion"
+                name="direccion"
+                placeholder="Ej: Av. Principal 123, Quito"
+                rows="2"
+              ></ion-textarea>
+            </ion-item>
+
+            <!-- Coordenadas Manuales -->
+            <ion-grid class="coordenadas-grid">
+              <ion-row>
+                <ion-col size="6">
+                  <ion-item class="form-item">
+                    <ion-label position="stacked">Latitud</ion-label>
+                    <ion-input
+                      type="number"
+                      [(ngModel)]="medidor.ubicacion_lat"
+                      name="ubicacion_lat"
+                      placeholder="-0.1807"
+                      step="0.0001"
+                    ></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-item class="form-item">
+                    <ion-label position="stacked">Longitud</ion-label>
+                    <ion-input
+                      type="number"
+                      [(ngModel)]="medidor.ubicacion_lng"
+                      name="ubicacion_lng"
+                      placeholder="-78.4678"
+                      step="0.0001"
+                    ></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="action-buttons">
+            <ion-button
+              expand="block"
+              (click)="guardarMedidor()"
+              [disabled]="!formularioValido()"
+              color="primary"
+              size="large"
+            >
+              <ion-icon slot="start" name="save-outline"></ion-icon>
+              Guardar Medidor
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              fill="clear"
+              (click)="limpiarFormulario()"
+              color="medium"
+            >
+              <ion-icon slot="start" name="refresh-outline"></ion-icon>
+              Limpiar Formulario
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

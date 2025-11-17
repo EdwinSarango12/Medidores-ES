@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="list-circle" class="ion-margin-end"></ion-icon>
+      {{ isAdmin ? 'Todas las Lecturas' : 'Mis Lecturas' }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargarLecturas()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="lecturas.length === 0" class="empty-state">
+    <ion-icon name="document-text-outline" size="large" color="medium"></ion-icon>
+    <p>No hay lecturas registradas</p>
+    <ion-button fill="outline" routerLink="/tabs/tab2" class="ion-margin-top">
+      <ion-icon name="add-circle" slot="start"></ion-icon>
+      Registrar Primera Lectura
+    </ion-button>
+  </div>
+
+  <ion-list *ngIf="lecturas.length > 0">
+    <ion-card *ngFor="let lectura of lecturas" class="lectura-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="water" color="primary"></ion-icon>
+          Valor: {{ lectura.valor_medidor }} m³
+        </ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="calendar" size="small"></ion-icon>
+          {{ formatearFecha(lectura.created_at) }}
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Información del Usuario (solo para admin) -->
+        <div *ngIf="isAdmin && lectura.usuario_nombre" class="user-info">
+          <ion-icon name="person" color="primary"></ion-icon>
+          <p><strong>Registrado por:</strong> {{ lectura.usuario_nombre }}</p>
+          <p><strong>Email:</strong> {{ lectura.usuario_email }}</p>
+        </div>
+
+        <!-- Observaciones -->
+        <div *ngIf="lectura.observaciones" class="observaciones">
+          <ion-icon name="document-text" color="primary"></ion-icon>
+          <p><strong>Observaciones:</strong></p>
+          <p>{{ lectura.observaciones }}</p>
+        </div>
+
+        <!-- Fotos -->
+        <div class="photos-container">
+          <div *ngIf="lectura.foto_medidor" class="photo-item">
+            <p><strong>Foto del Medidor:</strong></p>
+            <img [src]="lectura.foto_medidor" alt="Foto del medidor" (click)="openImage(lectura.foto_medidor)" />
+          </div>
+          <div *ngIf="lectura.foto_fachada" class="photo-item">
+            <p><strong>Foto de la Fachada:</strong></p>
+            <img [src]="lectura.foto_fachada" alt="Foto de la fachada" (click)="openImage(lectura.foto_fachada)" />
+          </div>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="location-container">
+          <p><strong>Ubicación:</strong></p>
+          <p>Latitud: {{ lectura.latitud | number:'1.6-6' }}</p>
+          <p>Longitud: {{ lectura.longitud | number:'1.6-6' }}</p>
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="abrirGoogleMaps(lectura)"
+            class="ion-margin-top"
+          >
+            <ion-icon name="map" slot="start"></ion-icon>
+            Ver en Google Maps
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,183 @@
+ion-content {
+  --background: #f5f5f5;
+}
+
+.welcome-section {
+  margin-bottom: 24px;
+  text-align: center;
+  
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    margin-bottom: 8px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.quick-actions {
+  margin-bottom: 24px;
+  
+  .action-button {
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.1);
+    height: 100%;
+    margin: 0;
+    
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.stats-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  
+  ion-card-header {
+    padding-bottom: 0;
+    
+    ion-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 12px;
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ion-color-primary);
+      line-height: 1.2;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.recent-readings {
+  background: transparent;
+  margin: 0 -16px;
+  
+  ion-list-header {
+    padding-left: 16px;
+    
+    ion-label {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+  
+  ion-item {
+    --padding-start: 16px;
+    --inner-padding-end: 16px;
+    --background: white;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    --border-radius: 12px;
+    
+    h3 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    p {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      margin: 2px 0;
+    }
+    
+    ion-badge {
+      margin-top: 6px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+  }
+  
+  ion-item-options {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+}
+
+ion-fab {
+  margin-bottom: 16px;
+  margin-right: 16px;
+  
+  ion-fab-button {
+    --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
+    
+    ion-icon {
+      font-size: 1.8rem;
+    }
+  }
+}
+
+// Estilos para los estados
+ion-badge {
+  &[color="success"] {
+    --background: var(--ion-color-success);
+    --color: white;
+  }
+  
+  &[color="warning"] {
+    --background: var(--ion-color-warning);
+    --color: white;
+  }
+  
+  &[color="danger"] {
+    --background: var(--ion-color-danger);
+    --color: white;
+  }
+  
+  &[color="medium"] {
+    --background: var(--ion-color-medium);
+    --color: white;
+  }
+}
+
+// Estilos para el menú deslizable
+ion-item-option {
+  padding: 0 16px;
+  
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+// Estilos para el botón de ver todas las lecturas
+ion-item[lines="none"] {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-top: 8px;
+  
+  ion-label {
+    font-weight: 500;
+  }
+  
+  ion-icon {
+    margin-left: 8px;
+    transition: transform 0.2s;
+  }
+  
+  &:active {
+    ion-icon {
+      transform: translateX(4px);
+    }
+  }
+}

@@ -1,0 +1,111 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="welcome-section">
+    <h1>Hola, {{ user?.user_metadata?.full_name || 'Usuario' }}</h1>
+    <p>Bienvenido al sistema de registro de lecturas</p>
+  </div>
+
+  <ion-grid class="quick-actions">
+    <ion-row>
+      <ion-col size="6" *ngIf="!isAdmin">
+        <ion-button expand="block" routerLink="/new-reading" class="action-button">
+          <ion-icon slot="start" name="add-circle"></ion-icon>
+          Nueva Lectura
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" routerLink="/readings" class="action-button">
+          <ion-icon slot="start" name="list"></ion-icon>
+          Ver Todas
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card *ngIf="isAdmin" class="stats-card">
+    <ion-card-header>
+      <ion-card-title>Resumen</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" class="stat-item">
+            <div class="stat-value">{{ recentReadings.length }}</div>
+            <div class="stat-label">Lecturas Totales</div>
+          </ion-col>
+          <ion-col size="6" class="stat-item">
+            <div class="stat-value">
+              {{ recentReadings.filter(r => r.status === 'pending').length }}
+            </div>
+            <div class="stat-label">Pendientes</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list class="recent-readings" lines="full">
+    <ion-list-header>
+      <ion-label>Lecturas Recientes</ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let reading of recentReadings | slice:0:5">
+      <ion-item (click)="viewReading(reading)" button detail>
+        <ion-label>
+          <h3>Medidor: {{ reading.meter_number }}</h3>
+          <p>Lectura: {{ reading.reading_value }}</p>
+          <p>{{ reading.reading_date | date:'medium' }}</p>
+          <ion-badge [color]="getStatusColor(reading.status)">
+            {{ reading.status | titlecase }}
+          </ion-badge>
+        </ion-label>
+        <ion-icon *ngIf="reading.meter_photo_url" 
+                 name="camera" 
+                 slot="end" 
+                 color="medium">
+        </ion-icon>
+      </ion-item>
+      
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteReading(reading, $event)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <ion-item *ngIf="recentReadings.length === 0" class="ion-text-center">
+      <ion-label color="medium">No hay lecturas recientes</ion-label>
+    </ion-item>
+    
+    <ion-item *ngIf="recentReadings.length > 0" 
+             lines="none" 
+             class="ion-text-center" 
+             routerLink="/readings">
+      <ion-label color="primary">Ver todas las lecturas</ion-label>
+      <ion-icon name="arrow-forward" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isAdmin">
+  <ion-fab-button routerLink="/new-reading">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

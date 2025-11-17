@@ -1,0 +1,101 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="water-outline" class="header-icon"></ion-icon>
+      Listado de Medidores
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadMedidores()">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Medidores</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando medidores...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && medidores.length === 0" class="empty-state">
+    <ion-icon name="water-outline" class="empty-icon"></ion-icon>
+    <h2>No hay medidores registrados</h2>
+    <p>Comienza agregando tu primer medidor en la pestaña "Nueva Lectura"</p>
+    <ion-button routerLink="/tabs/tab2" color="primary">
+      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+      Agregar Medidor
+    </ion-button>
+  </div>
+
+  <!-- Medidores List -->
+  <div *ngIf="!loading && medidores.length > 0" class="medidores-container">
+    <ion-card *ngFor="let medidor of medidores" class="medidor-card">
+      <ion-card-header>
+        <div class="card-header-content">
+          <div class="medidor-info">
+            <ion-icon name="speedometer-outline" class="medidor-icon"></ion-icon>
+            <div>
+              <ion-card-title>Medidor #{{ medidor.numero_medidor }}</ion-card-title>
+              <ion-card-subtitle>
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ medidor.fecha_lectura | date: 'dd/MM/yyyy' }}
+              </ion-card-subtitle>
+            </div>
+          </div>
+          <ion-badge [color]="getConsumoColor(medidor.consumo)" class="consumo-badge">
+            {{ medidor.consumo }} m³
+          </ion-badge>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="lecturas-grid">
+          <div class="lectura-item">
+            <ion-icon name="arrow-up-circle-outline" color="success"></ion-icon>
+            <div>
+              <p class="lectura-label">Lectura Actual</p>
+              <p class="lectura-value">{{ medidor.lectura_actual }} m³</p>
+            </div>
+          </div>
+          <div class="lectura-item">
+            <ion-icon name="arrow-down-circle-outline" color="medium"></ion-icon>
+            <div>
+              <p class="lectura-label">Lectura Anterior</p>
+              <p class="lectura-value">{{ medidor.lectura_anterior }} m³</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="medidor.direccion" class="ubicacion-info">
+          <ion-icon name="location-outline" color="primary"></ion-icon>
+          <span>{{ medidor.direccion }}</span>
+        </div>
+
+        <div *ngIf="medidor.ubicacion_lat && medidor.ubicacion_lng" class="ubicacion-info">
+          <ion-icon name="navigate-outline" color="primary"></ion-icon>
+          <span>{{ medidor.ubicacion_lat | number:'1.4-4' }}, {{ medidor.ubicacion_lng | number:'1.4-4' }}</span>
+        </div>
+
+        <div class="card-actions">
+          <ion-button fill="clear" size="small" (click)="verDetalle(medidor)">
+            <ion-icon slot="start" name="eye-outline"></ion-icon>
+            Ver Detalle
+          </ion-button>
+          <ion-button fill="clear" size="small" color="danger" (click)="eliminarMedidor(medidor)" *ngIf="isAdmin">
+            <ion-icon slot="start" name="trash-outline"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

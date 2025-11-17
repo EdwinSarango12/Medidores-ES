@@ -1,0 +1,62 @@
+.consumo-card, .barras-card {
+  margin-bottom: 20px;
+}
+
+.consumo-info {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+}
+
+.consumo-total, .consumo-promedio {
+  text-align: center;
+  
+  h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--ion-color-primary);
+    margin: 0;
+  }
+  
+  h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--ion-color-primary);
+    margin: 0;
+  }
+  
+  p {
+    margin: 8px 0 0 0;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+.chart-container {
+  position: relative;
+  height: 250px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+ion-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+ion-item {
+  --padding-start: 0;
+  
+  ion-icon {
+    margin-right: 16px;
+  }
+}
+

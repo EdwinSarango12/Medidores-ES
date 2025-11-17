@@ -1,0 +1,7 @@
+{
+  "name": "misupalogin",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
